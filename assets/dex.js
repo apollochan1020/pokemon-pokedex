@@ -30,7 +30,7 @@
     return path;
   }
 
-  var state = { q: '', gen: 0, type: '', avail: '', special: '', sort: 'num' };
+  var state = { q: '', gen: 0, type: '', avail: '', sort: 'num' };
 
   var grid = document.getElementById('dex');
   var numindex = document.getElementById('numindex');
@@ -93,41 +93,15 @@
     return '<div class="avail">' + tags + '</div>';
   }
 
-  function miniStats(stats) {
-    var labels = ['HP', '攻', '防', '特攻', '特防', '速'];
-    return '<div class="mega-stats">' + stats.map(function (v, i) {
-      return '<div class="mega-stat"><span>' + labels[i] + '</span><b>' + v + '</b><span class="bar"><i style="width:' + Math.max(2, Math.round(v / 255 * 100)) + '%"></i></span></div>';
-    }).join('') + '</div>';
-  }
-
   function specialBlock(d) {
-    var panels = [];
+    var chips = [];
     (d.mega || []).forEach(function (m) {
-      var delta = (m.delta >= 0 ? '+' : '') + m.delta;
-      var badge = m.era === 'za'
-        ? '<span class="mega-badge za">超级进化 · ZA</span>'
-        : '<span class="mega-badge">超级进化</span>';
-      var req = m.stone ? '需「' + m.stone + '」' : (m.note || '');
-      panels.push('<div class="mega-panel">' +
-        '<img loading="lazy" decoding="async" src="./assets/img/form-' + m.img + '.webp" alt="' + esc(m.name) + '">' +
-        '<div class="mega-body">' +
-          '<div class="mega-head">' + badge + '<b>' + esc(m.name) + '</b></div>' +
-          '<div class="mega-types">' + m.types.map(function (t) { return typeChip(t, true); }).join('') + '</div>' +
-          '<div class="mega-meta">特性 ' + esc(m.ability || '—') + ' · 种族值 ' + m.total + '（' + delta + '）' + (req ? ' · ' + esc(req) : '') + '</div>' +
-        '</div>' +
-        miniStats(m.stats) +
-      '</div>');
+      chips.push('<a class="form-chip" data-jump-form="' + m.img + '">' + esc(m.name) + '</a>');
     });
     if (d.gmax) {
-      panels.push('<div class="mega-panel gmax">' +
-        '<img loading="lazy" decoding="async" src="./assets/img/form-' + d.gmax.img + '.webp" alt="' + esc(d.gmax.name) + '">' +
-        '<div class="mega-body">' +
-          '<div class="mega-head"><span class="gmax-badge">超极巨化</span><b>' + esc(d.gmax.name) + '</b></div>' +
-          '<div class="mega-meta">专属极巨招式 · 第 8 世代 · 属性与特性同本体</div>' +
-        '</div>' +
-      '</div>');
+      chips.push('<a class="form-chip gmax" data-jump-form="' + d.gmax.img + '">' + esc(d.gmax.name) + '</a>');
     }
-    return panels.length ? '<div class="special">' + panels.join('') + '</div>' : '';
+    return chips.length ? '<div class="special"><span class="evo-label">特殊形态</span>' + chips.join('') + '</div>' : '';
   }
 
   function card(d) {
@@ -154,7 +128,7 @@
       ' data-key="' + esc((d.n + ' ' + d.zh + ' ' + d.en).toLowerCase()) + '">' +
       '<div class="card-top">' +
         '<div class="thumb" style="--tc:var(--t-' + esc(d.types[0]) + ')">' +
-          '<img loading="lazy" decoding="async" src="./assets/img/' + d.n + '.webp" alt="' + esc(d.zh) + ' 预览图">' +
+          '<img loading="lazy" decoding="async" fetchpriority="low" width="192" height="192" src="./assets/img/' + d.n + '.webp" alt="' + esc(d.zh) + ' 预览图">' +
         '</div>' +
         '<div class="card-main">' +
           '<div class="card-head">' +
@@ -184,6 +158,59 @@
 
   // ---- render all cards once ----
   grid.innerHTML = DATA.map(card).join('');
+
+  // ---- special forms (own cards) ----
+  var FORMS = window.POKEDEX_FORMS || [];
+  var formsGrid = document.getElementById('formsGrid');
+  var formCountEl = document.getElementById('formCount');
+  var formKind = '';
+
+  function formCard(f) {
+    var badge = f.kind === 'gmax'
+      ? '<span class="gmax-badge">超极巨化</span>'
+      : (f.era === 'za' ? '<span class="mega-badge za">超级进化 · ZA</span>' : '<span class="mega-badge">超级进化</span>');
+    var delta = (f.delta >= 0 ? '+' : '') + f.delta;
+    var meta;
+    if (f.kind === 'gmax') {
+      meta = '专属极巨招式 · 第 8 世代 · 属性与特性同本体';
+    } else {
+      meta = '特性 ' + esc(f.ability || '—') + ' · 种族值 ' + f.total + '（' + delta + '）' +
+        (f.stone ? ' · 需「' + esc(f.stone) + '」' : (f.note ? ' · ' + esc(f.note) : ''));
+    }
+    return '<article class="form-card ' + f.kind + '" id="pf-' + f.img + '" data-kind="' + f.kind + '" data-key="' + esc((f.name + ' ' + f.baseName + ' ' + f.base).toLowerCase()) + '">' +
+      '<div class="form-top">' +
+        '<div class="fthumb"><img loading="lazy" decoding="async" fetchpriority="low" width="192" height="192" src="./assets/img/form-' + f.img + '.webp" alt="' + esc(f.name) + ' 预览图"></div>' +
+        '<div class="fmain">' +
+          '<div class="mega-head">' + badge + '<b>' + esc(f.name) + '</b></div>' +
+          '<div class="mega-types">' + f.types.map(function (t) { return typeChip(t, true); }).join('') + '</div>' +
+          '<div class="form-base">本体：<a class="evo-link" data-jump="' + f.base + '">' + esc(f.baseName) + ' No.' + String(f.base).padStart(3, '0') + '</a></div>' +
+        '</div>' +
+      '</div>' +
+      statRows({ stats: f.stats, total: f.total }) +
+      '<div class="form-meta">' + meta + '</div>' +
+    '</article>';
+  }
+
+  formsGrid.innerHTML = FORMS.map(formCard).join('');
+
+  function applyForms() {
+    var shown = 0;
+    var q = state.q.toLowerCase().trim();
+    var num = Number(q.replace(/^no\.?/i, ''));
+    var cards = formsGrid.children;
+    for (var i = 0; i < cards.length; i++) {
+      var ok = !formKind || cards[i].getAttribute('data-kind') === formKind;
+      if (ok && q) {
+        var key = cards[i].getAttribute('data-key');
+        ok = key.indexOf(q) >= 0 || (!isNaN(num) && cards[i].id === 'pf-' + num);
+      }
+      cards[i].classList.toggle('hidden', !ok);
+      if (ok) shown++;
+    }
+    if (formCountEl) formCountEl.textContent = shown + ' / ' + FORMS.length + ' 个形态';
+    var totalEl = document.getElementById('formTotal');
+    if (totalEl) totalEl.textContent = FORMS.length;
+  }
 
   // ---- number index ----
   var idxHtml = '';
@@ -215,8 +242,6 @@
     if (state.gen && gen !== state.gen) return false;
     if (state.avail === 'yes' && avail !== '1') return false;
     if (state.avail === 'no' && avail !== '0') return false;
-    if (state.special === 'mega' && el.getAttribute('data-mega') !== '1') return false;
-    if (state.special === 'gmax' && el.getAttribute('data-gmax') !== '1') return false;
     if (state.type && types.split(' ').indexOf(state.type) < 0) return false;
     if (state.q) {
       var key = el.getAttribute('data-key');
@@ -251,6 +276,7 @@
     }
     if (state.sort !== 'num') applySort();
     countEl.textContent = shown + ' / ' + DATA.length;
+    applyForms();
     return shown;
   }
 
@@ -263,13 +289,14 @@
   }
 
   function resetAll(silent) {
-    state = { q: '', gen: 0, type: '', avail: '', special: '', sort: 'num' };
+    state = { q: '', gen: 0, type: '', avail: '', sort: 'num' };
     document.getElementById('q').value = '';
     document.getElementById('sort').value = 'num';
     refreshChips('.gen-chip', 'data-gen', '0');
     refreshChips('#type-filters .chip', 'data-type', '');
     refreshChips('.avail-chip', 'data-avail', '');
-    refreshChips('.special-chip', 'data-special', '');
+    formKind = '';
+    refreshChips('.form-type-chip', 'data-form-kind', '');
     apply();
     if (!silent) toast('已重置全部筛选');
   }
@@ -278,6 +305,19 @@
     var target = document.getElementById('p-' + n);
     if (!target) return;
     if (target.classList.contains('hidden')) resetAll(true);
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.add('flash');
+    setTimeout(function () { target.classList.remove('flash'); }, 1500);
+  }
+
+  function jumpToForm(img) {
+    var target = document.getElementById('pf-' + img);
+    if (!target) return;
+    if (target.classList.contains('hidden')) {
+      formKind = '';
+      refreshChips('.form-type-chip', 'data-form-kind', '');
+      applyForms();
+    }
     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
     target.classList.add('flash');
     setTimeout(function () { target.classList.remove('flash'); }, 1500);
@@ -314,12 +354,17 @@
     });
   });
 
-  document.querySelectorAll('.special-chip').forEach(function (b) {
+  document.querySelectorAll('.form-type-chip').forEach(function (b) {
     b.addEventListener('click', function () {
-      state.special = b.getAttribute('data-special') || '';
-      refreshChips('.special-chip', 'data-special', state.special);
-      apply();
+      formKind = b.getAttribute('data-form-kind') || '';
+      refreshChips('.form-type-chip', 'data-form-kind', formKind);
+      applyForms();
     });
+  });
+
+  document.getElementById('specialLink').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('special').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   document.getElementById('sort').addEventListener('change', function (e) {
@@ -331,8 +376,21 @@
     resetAll(false);
   });
 
-  // 图鉴卡片内：点击进化链中的宝可梦直接跳转
+  // 图鉴卡片内：进化链 / 特殊形态跳转
   grid.addEventListener('click', function (e) {
+    var f = e.target.closest('[data-jump-form]');
+    if (f) {
+      e.preventDefault();
+      jumpToForm(f.getAttribute('data-jump-form'));
+      return;
+    }
+    var a = e.target.closest('[data-jump]');
+    if (!a) return;
+    e.preventDefault();
+    jumpTo(a.getAttribute('data-jump'));
+  });
+
+  formsGrid.addEventListener('click', function (e) {
     var a = e.target.closest('[data-jump]');
     if (!a) return;
     e.preventDefault();

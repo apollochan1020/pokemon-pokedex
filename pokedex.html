@@ -149,18 +149,24 @@ select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--rule)
 .evo-cond{color:var(--muted);font-size:11px}
 .evo-item{display:inline-block;margin:0 4px 3px 0}
 .evo-item .cond{color:var(--muted);font-size:11px}
-.special{border-top:1px dashed var(--rule);padding-top:9px;margin-bottom:8px;font-size:12px}
-.mega-panel{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;border:1px solid var(--rule);background:var(--bg);border-radius:10px;padding:9px;margin:8px 0}
-.mega-panel img{width:76px;height:76px;object-fit:contain;flex:none;border-radius:8px;background:var(--bg2);border:1px solid var(--rule)}
-.mega-body{flex:1;min-width:0}
+.special{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-top:1px dashed var(--rule);padding-top:9px;margin-bottom:8px;font-size:12px}
+.form-chip{font-size:11px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--rule));color:var(--accent);border-radius:999px;padding:2px 9px;cursor:pointer;background:color-mix(in srgb,var(--accent) 7%,transparent);text-decoration:none}
+.form-chip:hover{text-decoration:none;border-color:var(--accent)}
+.form-chip.gmax{border-color:color-mix(in srgb,var(--accent2) 35%,var(--rule));color:var(--accent2);background:color-mix(in srgb,var(--accent2) 7%,transparent)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;padding:16px 0 8px}
+.form-card{background:var(--bg2);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;scroll-margin-top:84px}
+.form-card.gmax{border-left-color:var(--accent2)}
+.form-card.hidden{display:none}
+.form-card.flash{outline:2px solid var(--accent);outline-offset:2px}
+.form-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.fthumb{width:96px;height:96px;flex:none;border-radius:12px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg)}
+.fthumb img{width:90px;height:90px;object-fit:contain}
+.fmain{flex:1;min-width:0}
+.form-base{font-size:11px;color:var(--muted);margin-top:5px}
+.form-meta{font-size:11px;color:var(--muted);border-top:1px dashed var(--rule);padding-top:8px;line-height:1.6}
 .mega-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
 .mega-head b{font-weight:700}
 .mega-types{display:flex;gap:4px;margin:4px 0 3px;flex-wrap:wrap}
-.mega-meta{font-size:11px;color:var(--muted);line-height:1.5}
-.mega-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;width:100%;margin-top:6px}
-.mega-stat{font-size:9px;color:var(--muted);text-align:center;line-height:1.2}
-.mega-stat b{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink);font-weight:400}
-.mega-stat .bar{display:block;height:3px;margin-top:2px}
 .type.sm{font-size:10px;padding:1px 7px;border-radius:5px}
 .mega-badge{flex:none;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);border-radius:5px;padding:1px 7px;font-size:10px;letter-spacing:.06em}
 .mega-badge.za{background:color-mix(in srgb,var(--accent2) 12%,transparent);color:var(--accent2)}
@@ -276,13 +282,8 @@ footer a{word-break:break-all}
       </div>
       <div class="filter-row">
         <span class="filter-label">特殊形态</span>
-        <button class="chip special-chip" data-special="" aria-pressed="true">全部</button>
-        <button class="chip special-chip" data-special="mega" aria-pressed="false">超级进化</button>
-        <button class="chip special-chip" data-special="gmax" aria-pressed="false">超极巨化</button>
-      </div>
-      <div class="filter-note">
-        <b>超级进化</b>：第 6 世代（XY／ORAS）机制，需让宝可梦携带对应超级石，共 46 种、48 个形态；2025 年《传说 Z-A》新增 41 种、49 个形态（含 Z 变体），合计 87 种、97 个形态，Z-A 新增项用蓝色徽章区分。<br>
-        <b>极巨化</b>：第 8 世代（剑／盾）机制，普通极巨化对绝大多数宝可梦通用；<b>超极巨化</b>仅有 32 种专属形态，可额外使用专属极巨招式。
+        <a class="chip" href="#special" id="specialLink">超级进化 / 超极巨化 形态图鉴 ↓</a>
+        <span class="evo-cond" style="margin-left:6px">已独立成卡片，可与本体互相跳转</span>
       </div>
     </div>
     <div style="margin-top:14px">
@@ -294,6 +295,24 @@ footer a{word-break:break-all}
   <section>
     <h2>图鉴正文</h2>
     <div class="dex-grid" id="dex"></div>
+  </section>
+
+  <section id="special">
+    <h2>特殊形态图鉴</h2>
+    <div class="filter-panel">
+      <div class="filter-row">
+        <span class="filter-label">类型</span>
+        <button class="chip form-type-chip" data-form-kind="" aria-pressed="true">全部</button>
+        <button class="chip form-type-chip" data-form-kind="mega" aria-pressed="false">超级进化</button>
+        <button class="chip form-type-chip" data-form-kind="gmax" aria-pressed="false">超极巨化</button>
+        <span class="count" id="formCount" style="margin-left:auto">—</span>
+      </div>
+      <div class="filter-note">
+        <b>超级进化</b>：第 6 世代（XY／ORAS）需携带对应超级石，共 48 个形态；2025《传说 Z-A》新增 49 个形态，用蓝色徽章区分。<br>
+        <b>超极巨化</b>：第 8 世代（剑／盾）专属形态 32 种，可使用专属极巨招式；普通极巨化对绝大多数宝可梦通用。每张形态卡都可点击「本体」回到对应的图鉴条目。
+      </div>
+    </div>
+    <div class="form-grid" id="formsGrid"></div>
   </section>
 </main>
 
