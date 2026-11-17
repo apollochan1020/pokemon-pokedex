@@ -150,11 +150,24 @@ select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--rule)
 .evo-item{display:inline-block;margin:0 4px 3px 0}
 .evo-item .cond{color:var(--muted);font-size:11px}
 .special{border-top:1px dashed var(--rule);padding-top:9px;margin-bottom:8px;font-size:12px}
-.special-item{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;margin:4px 0}
-.special-item b{font-weight:700}
+.mega-panel{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;border:1px solid var(--rule);background:var(--bg);border-radius:10px;padding:9px;margin:8px 0}
+.mega-panel img{width:76px;height:76px;object-fit:contain;flex:none;border-radius:8px;background:var(--bg2);border:1px solid var(--rule)}
+.mega-body{flex:1;min-width:0}
+.mega-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.mega-head b{font-weight:700}
+.mega-types{display:flex;gap:4px;margin:4px 0 3px;flex-wrap:wrap}
+.mega-meta{font-size:11px;color:var(--muted);line-height:1.5}
+.mega-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;width:100%;margin-top:6px}
+.mega-stat{font-size:9px;color:var(--muted);text-align:center;line-height:1.2}
+.mega-stat b{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink);font-weight:400}
+.mega-stat .bar{display:block;height:3px;margin-top:2px}
+.type.sm{font-size:10px;padding:1px 7px;border-radius:5px}
 .mega-badge{flex:none;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);border-radius:5px;padding:1px 7px;font-size:10px;letter-spacing:.06em}
 .mega-badge.za{background:color-mix(in srgb,var(--accent2) 12%,transparent);color:var(--accent2)}
 .gmax-badge{flex:none;background:color-mix(in srgb,var(--accent2) 12%,transparent);color:var(--accent2);border-radius:5px;padding:1px 7px;font-size:10px;letter-spacing:.06em}
+.totop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:50%;border:1px solid var(--rule);background:var(--bg2);color:var(--ink);font-size:18px;line-height:1;cursor:pointer;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s ease;z-index:80}
+.totop.on{opacity:1;transform:none;pointer-events:auto}
+.totop:hover{border-color:var(--accent);color:var(--accent)}
 .filter-note{font-size:12px;color:var(--muted);background:var(--bg);border:1px dashed var(--rule);border-radius:10px;padding:8px 12px;margin-top:12px;line-height:1.6}
 .avail{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:11px}
 .avail .tag{background:color-mix(in srgb,var(--accent2) 10%,var(--bg2));border:1px solid color-mix(in srgb,var(--accent2) 30%,var(--rule));color:var(--accent2);border-radius:5px;padding:1px 7px}
@@ -297,6 +310,7 @@ footer a{word-break:break-all}
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button class="totop" id="toTop" aria-label="回到顶部" title="回到顶部">↑</button>
 
 <script src="./assets/data.js"></script>
 <script src="./assets/dex.js"></script>

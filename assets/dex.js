@@ -44,8 +44,8 @@
     });
   }
 
-  function typeChip(t) {
-    return '<span class="type t-' + esc(t) + (LIGHT[t] ? ' light' : '') + '" style="--tc:var(--t-' + esc(t) + ')">' + esc(t) + '</span>';
+  function typeChip(t, small) {
+    return '<span class="type' + (small ? ' sm' : '') + ' t-' + esc(t) + (LIGHT[t] ? ' light' : '') + '" style="--tc:var(--t-' + esc(t) + ')">' + esc(t) + '</span>';
   }
 
   function statRows(d) {
@@ -93,21 +93,41 @@
     return '<div class="avail">' + tags + '</div>';
   }
 
+  function miniStats(stats) {
+    var labels = ['HP', '攻', '防', '特攻', '特防', '速'];
+    return '<div class="mega-stats">' + stats.map(function (v, i) {
+      return '<div class="mega-stat"><span>' + labels[i] + '</span><b>' + v + '</b><span class="bar"><i style="width:' + Math.max(2, Math.round(v / 255 * 100)) + '%"></i></span></div>';
+    }).join('') + '</div>';
+  }
+
   function specialBlock(d) {
-    var parts = [];
+    var panels = [];
     (d.mega || []).forEach(function (m) {
       var delta = (m.delta >= 0 ? '+' : '') + m.delta;
-      var meta = [m.types.join('／'), m.ability, '种族值 ' + m.total + '（' + delta + '）'].filter(Boolean).join(' · ');
-      var req = m.stone ? ' · 需「' + m.stone + '」' : (m.note ? ' · ' + m.note : '');
       var badge = m.era === 'za'
         ? '<span class="mega-badge za">超级进化 · ZA</span>'
         : '<span class="mega-badge">超级进化</span>';
-      parts.push('<div class="special-item">' + badge + '<b>' + esc(m.name) + '</b><span class="evo-cond">' + esc(meta + req) + '</span></div>');
+      var req = m.stone ? '需「' + m.stone + '」' : (m.note || '');
+      panels.push('<div class="mega-panel">' +
+        '<img loading="lazy" decoding="async" src="./assets/img/form-' + m.img + '.webp" alt="' + esc(m.name) + '">' +
+        '<div class="mega-body">' +
+          '<div class="mega-head">' + badge + '<b>' + esc(m.name) + '</b></div>' +
+          '<div class="mega-types">' + m.types.map(function (t) { return typeChip(t, true); }).join('') + '</div>' +
+          '<div class="mega-meta">特性 ' + esc(m.ability || '—') + ' · 种族值 ' + m.total + '（' + delta + '）' + (req ? ' · ' + esc(req) : '') + '</div>' +
+        '</div>' +
+        miniStats(m.stats) +
+      '</div>');
     });
     if (d.gmax) {
-      parts.push('<div class="special-item"><span class="gmax-badge">超极巨化</span><b>' + esc(d.gmax) + '</b><span class="evo-cond">专属极巨招式 · 第 8 世代</span></div>');
+      panels.push('<div class="mega-panel gmax">' +
+        '<img loading="lazy" decoding="async" src="./assets/img/form-' + d.gmax.img + '.webp" alt="' + esc(d.gmax.name) + '">' +
+        '<div class="mega-body">' +
+          '<div class="mega-head"><span class="gmax-badge">超极巨化</span><b>' + esc(d.gmax.name) + '</b></div>' +
+          '<div class="mega-meta">专属极巨招式 · 第 8 世代 · 属性与特性同本体</div>' +
+        '</div>' +
+      '</div>');
     }
-    return parts.length ? '<div class="special">' + parts.join('') + '</div>' : '';
+    return panels.length ? '<div class="special">' + panels.join('') + '</div>' : '';
   }
 
   function card(d) {
@@ -325,6 +345,17 @@
     e.preventDefault();
     jumpTo(a.getAttribute('data-n'));
   });
+
+  // ---- back to top ----
+  var toTop = document.getElementById('toTop');
+  if (toTop) {
+    window.addEventListener('scroll', function () {
+      toTop.classList.toggle('on', window.scrollY > 600);
+    }, { passive: true });
+    toTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 
   // ---- metrics ----
   var availCount = DATA.filter(function (d) { return d.avail.length; }).length;
