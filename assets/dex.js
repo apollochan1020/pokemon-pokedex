@@ -30,7 +30,7 @@
     return path;
   }
 
-  var state = { q: '', gen: 0, type: '', avail: '', sort: 'num' };
+  var state = { q: '', gen: 0, type: '', avail: '', special: '', sort: 'num' };
 
   var grid = document.getElementById('dex');
   var numindex = document.getElementById('numindex');
@@ -93,6 +93,20 @@
     return '<div class="avail">' + tags + '</div>';
   }
 
+  function specialBlock(d) {
+    var parts = [];
+    (d.mega || []).forEach(function (m) {
+      var delta = (m.delta >= 0 ? '+' : '') + m.delta;
+      var meta = [m.types.join('／'), m.ability, '种族值 ' + m.total + '（' + delta + '）'].filter(Boolean).join(' · ');
+      var req = m.stone ? ' · 需「' + m.stone + '」' : (m.note ? ' · ' + m.note : '');
+      parts.push('<div class="special-item"><span class="mega-badge">超级进化</span><b>' + esc(m.name) + '</b><span class="evo-cond">' + esc(meta + req) + '</span></div>');
+    });
+    if (d.gmax) {
+      parts.push('<div class="special-item"><span class="gmax-badge">超极巨化</span><b>' + esc(d.gmax) + '</b><span class="evo-cond">专属极巨招式 · 第 8 世代</span></div>');
+    }
+    return parts.length ? '<div class="special">' + parts.join('') + '</div>' : '';
+  }
+
   function card(d) {
     var badges = '';
     if (d.legend) badges += '<span class="badge legend">传说</span>';
@@ -111,6 +125,8 @@
       ' data-gen="' + d.gen + '"' +
       ' data-types="' + esc(d.types.join(' ')) + '"' +
       ' data-avail="' + (d.avail.length ? '1' : '0') + '"' +
+      ' data-mega="' + ((d.mega && d.mega.length) ? '1' : '0') + '"' +
+      ' data-gmax="' + (d.gmax ? '1' : '0') + '"' +
       ' data-total="' + d.total + '"' +
       ' data-key="' + esc((d.n + ' ' + d.zh + ' ' + d.en).toLowerCase()) + '">' +
       '<div class="card-top">' +
@@ -138,6 +154,7 @@
         '<div><dt>基础经验</dt><dd>' + d.exp + '</dd></div>' +
       '</dl>' +
       evoBlock(d) +
+      specialBlock(d) +
       availBlock(d) +
       '</article>';
   }
@@ -175,6 +192,8 @@
     if (state.gen && gen !== state.gen) return false;
     if (state.avail === 'yes' && avail !== '1') return false;
     if (state.avail === 'no' && avail !== '0') return false;
+    if (state.special === 'mega' && el.getAttribute('data-mega') !== '1') return false;
+    if (state.special === 'gmax' && el.getAttribute('data-gmax') !== '1') return false;
     if (state.type && types.split(' ').indexOf(state.type) < 0) return false;
     if (state.q) {
       var key = el.getAttribute('data-key');
@@ -221,12 +240,13 @@
   }
 
   function resetAll(silent) {
-    state = { q: '', gen: 0, type: '', avail: '', sort: 'num' };
+    state = { q: '', gen: 0, type: '', avail: '', special: '', sort: 'num' };
     document.getElementById('q').value = '';
     document.getElementById('sort').value = 'num';
     refreshChips('.gen-chip', 'data-gen', '0');
     refreshChips('#type-filters .chip', 'data-type', '');
     refreshChips('.avail-chip', 'data-avail', '');
+    refreshChips('.special-chip', 'data-special', '');
     apply();
     if (!silent) toast('已重置全部筛选');
   }
@@ -267,6 +287,14 @@
     b.addEventListener('click', function () {
       state.avail = b.getAttribute('data-avail') || '';
       refreshChips('.avail-chip', 'data-avail', state.avail);
+      apply();
+    });
+  });
+
+  document.querySelectorAll('.special-chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.special = b.getAttribute('data-special') || '';
+      refreshChips('.special-chip', 'data-special', state.special);
       apply();
     });
   });

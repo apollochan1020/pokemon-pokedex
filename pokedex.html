@@ -139,8 +139,7 @@ select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--rule)
 .abil{background:var(--bg);border:1px solid var(--rule);border-radius:5px;padding:1px 7px;font-size:11px}
 .abil.hidden{color:var(--accent2);border-color:color-mix(in srgb,var(--accent2) 40%,var(--rule))}
 
-/* evolution + availability */
-.evo{font-size:12px;border-top:1px dashed var(--rule);padding-top:9px;margin-bottom:8px}
+/* evolution + availability */.evo{font-size:12px;border-top:1px dashed var(--rule);padding-top:9px;margin-bottom:8px}
 .evo-line{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:5px}
 .evo-label{color:var(--muted);flex:none;letter-spacing:.04em}
 .evo-link{color:var(--accent2);cursor:pointer;border-bottom:1px dashed color-mix(in srgb,var(--accent2) 55%,transparent)}
@@ -150,6 +149,12 @@ select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--rule)
 .evo-cond{color:var(--muted);font-size:11px}
 .evo-item{display:inline-block;margin:0 4px 3px 0}
 .evo-item .cond{color:var(--muted);font-size:11px}
+.special{border-top:1px dashed var(--rule);padding-top:9px;margin-bottom:8px;font-size:12px}
+.special-item{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;margin:4px 0}
+.special-item b{font-weight:700}
+.mega-badge{flex:none;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);border-radius:5px;padding:1px 7px;font-size:10px;letter-spacing:.06em}
+.gmax-badge{flex:none;background:color-mix(in srgb,var(--accent2) 12%,transparent);color:var(--accent2);border-radius:5px;padding:1px 7px;font-size:10px;letter-spacing:.06em}
+.filter-note{font-size:12px;color:var(--muted);background:var(--bg);border:1px dashed var(--rule);border-radius:10px;padding:8px 12px;margin-top:12px;line-height:1.6}
 .avail{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:11px}
 .avail .tag{background:color-mix(in srgb,var(--accent2) 10%,var(--bg2));border:1px solid color-mix(in srgb,var(--accent2) 30%,var(--rule));color:var(--accent2);border-radius:5px;padding:1px 7px}
 .avail .none{color:var(--muted)}
@@ -200,7 +205,7 @@ footer a{word-break:break-all}
   <section class="hero">
     <div class="kicker">National Pokédex Archive</div>
     <h1>宝可梦全国图鉴<br>001–1025</h1>
-    <p class="lede">收录全国图鉴全部 9 个世代，No.001 妙蛙种子 至 No.1025 桃歹郎。每只宝可梦包含预览图、属性、种族值、特性、进化关系、性别比例、蛋组、身高体重；No.001–898 另标注剑／盾中的图鉴归属（伽勒尔／铠岛／王冠雪原），剑／盾之后登场的宝可梦统一标为「剑／盾不可获得」。</p>
+    <p class="lede">收录全国图鉴全部 9 个世代，No.001 妙蛙种子 至 No.1025 桃歹郎。每只宝可梦包含预览图、属性、种族值、特性、进化关系、性别比例、蛋组、身高体重，并标注超级进化（Mega）与超极巨化形态；No.001–898 另标注剑／盾中的图鉴归属（伽勒尔／铠岛／王冠雪原）。</p>
     <div class="metrics">
       <div class="metric"><div class="num" id="m-total">1025</div><div class="lbl">收录宝可梦</div></div>
       <div class="metric"><div class="num" id="m-avail">—</div><div class="lbl">剑／盾可获得</div></div>
@@ -255,6 +260,16 @@ footer a{word-break:break-all}
         </select>
         <button class="chip" id="reset" style="margin-left:auto">重置筛选</button>
       </div>
+      <div class="filter-row">
+        <span class="filter-label">特殊形态</span>
+        <button class="chip special-chip" data-special="" aria-pressed="true">全部</button>
+        <button class="chip special-chip" data-special="mega" aria-pressed="false">超级进化</button>
+        <button class="chip special-chip" data-special="gmax" aria-pressed="false">超极巨化</button>
+      </div>
+      <div class="filter-note">
+        <b>超级进化</b>：第 6 世代（XY／ORAS）机制，需让宝可梦携带对应超级石，共 46 种、48 个形态（喷火龙与超梦各 X／Y 两种）。<br>
+        <b>极巨化</b>：第 8 世代（剑／盾）机制，普通极巨化对绝大多数宝可梦通用；<b>超极巨化</b>仅有 32 种专属形态，可额外使用专属极巨招式。
+      </div>
     </div>
     <div style="margin-top:14px">
       <div class="card-sub" style="margin:0 0 8px">编号索引 · 点击直达图鉴条目；<span style="color:var(--muted)">虚线框</span>表示该宝可梦在剑／盾中不可获得</div>
@@ -275,6 +290,7 @@ footer a{word-break:break-all}
     <li>中文名、英文名、分类（如「鼠宝可梦」）、世代划分、进化条件：取自 <a href="https://github.com/PokeAPI/pokeapi" target="_blank" rel="noopener">PokeAPI</a> 数据集（简体中文，language_id = 12）。</li>
     <li>宝可梦预览图：取自 <a href="https://github.com/PokeAPI/sprites" target="_blank" rel="noopener">PokeAPI/sprites</a> 官方美术图（official-artwork），已本地化压缩为 256px WebP，共 1025 张，离线可用。</li>
     <li>「剑／盾可获得」以游戏中伽勒尔图鉴、铠岛图鉴、王冠雪原图鉴的登记编号为准；未登记任何编号者视为该作中不可获得。</li>
+    <li>超级进化与超极巨化数据：取自 PokeAPI 形态表（pokemon_forms / pokemon_stats / pokemon_types / pokemon_abilities），收录第 6 世代（XY／ORAS）48 个超级进化形态与第 8 世代 32 种超极巨化形态；《传说 Z-A》新增的超级进化未收录。</li>
     <li>图鉴按基础形态收录，地区形态（如伽勒尔喵喵、阿罗拉六尾）与超极巨化不单独编号。共 1025 条，其中剑／盾可获得 <span id="foot-avail">—</span> 种。</li>
   </ol>
 </footer>
