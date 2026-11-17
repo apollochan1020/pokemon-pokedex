@@ -99,7 +99,10 @@
       var delta = (m.delta >= 0 ? '+' : '') + m.delta;
       var meta = [m.types.join('／'), m.ability, '种族值 ' + m.total + '（' + delta + '）'].filter(Boolean).join(' · ');
       var req = m.stone ? ' · 需「' + m.stone + '」' : (m.note ? ' · ' + m.note : '');
-      parts.push('<div class="special-item"><span class="mega-badge">超级进化</span><b>' + esc(m.name) + '</b><span class="evo-cond">' + esc(meta + req) + '</span></div>');
+      var badge = m.era === 'za'
+        ? '<span class="mega-badge za">超级进化 · ZA</span>'
+        : '<span class="mega-badge">超级进化</span>';
+      parts.push('<div class="special-item">' + badge + '<b>' + esc(m.name) + '</b><span class="evo-cond">' + esc(meta + req) + '</span></div>');
     });
     if (d.gmax) {
       parts.push('<div class="special-item"><span class="gmax-badge">超极巨化</span><b>' + esc(d.gmax) + '</b><span class="evo-cond">专属极巨招式 · 第 8 世代</span></div>');
